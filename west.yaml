@@ -5,7 +5,7 @@ manifest:
       revision: main
       path: zephyr
     - name: zephyr-fus-resources
-      url: https://github.com/FSEmbedded/zephyr-fus-resources.git
+      url: https://github.com/FSEmbedded/zephyr-fus-resources
       revision: main
       path: modules/zephyr-fus-resources
   self:

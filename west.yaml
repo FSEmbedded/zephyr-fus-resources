@@ -1,0 +1,12 @@
+manifest:
+  projects:
+    - name: zephyr
+      url: https://github.com/FSEmbedded/zephyr-fus
+      revision: main
+      path: zephyr
+    - name: zephyr-fus-resources
+      url: https://github.com/FSEmbedded/zephyr-fus-resources.git
+      revision: main
+      path: modules/zephyr-fus-resources
+  self:
+    path: .

@@ -1,0 +1,1 @@
+# zephyr-fus-resources

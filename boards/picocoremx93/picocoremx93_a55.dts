@@ -1,0 +1,192 @@
+/*
+ * Copyright 2022,2024 NXP
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/dts-v1/;
+
+#include <nxp/nxp_mimx93_a55.dtsi>
+#include "picocoremx93-pinctrl.dtsi"
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+
+/* Aliases derived from our Linux picocoremx93.dtsi device tree */
+pc_i2c_a: &lpi2c1 {};
+pc_i2c_b: &lpi2c8 {};
+pc_i2c_c: &lpi2c5 {};
+pc_i2c_d: &lpi2c2 {};
+pc_uart_a: &lpuart7 {};
+pc_uart_b: &lpuart6 {};
+pc_uart_c: &lpuart1 {};
+pc_uart_d: &lpuart2 {};
+pc_eth_a: &eqos {};
+pc_eth_b: &fec {};
+pc_usb_1: &usbotg1 {};
+pc_usb_2: &usbotg2 {};
+emmc: &usdhc1 {};
+pc_sdio_a: &usdhc2 {};
+pc_sdio_b: &usdhc3 {};
+pc_sdio_c: &usdhc1 {};
+pc_spi_a: &lpspi6 {};
+pc_spi_b: &lpspi1 {};
+pc_sai: &sai3	{};
+
+/ {
+	model = "NXP i.MX93 A55";
+	compatible = "fsl,mimx93";
+
+	chosen {
+		zephyr,console = &pc_uart_d;
+		zephyr,shell-uart = &pc_uart_d;
+		/* sram node actually locates at DDR DRAM */
+		zephyr,sram = &dram;
+		zephyr,canbus = &flexcan1;
+	};
+
+	cpus {
+		cpu@0 {
+			status = "disabled";
+		};
+	};
+
+	dram: memory@d0000000 {
+		reg = <0xd0000000 DT_SIZE_M(1)>;
+	};
+
+	aliases {
+		ethernet0 = &eqos;
+		ethernet1 = &fec;
+		i2c0 = &pc_i2c_a;
+		i2c1 = &pc_i2c_b;
+		i2c2 = &pc_i2c_c;
+		i2c3 = &pc_i2c_d;
+		/delete-property/ i2c4;
+		/delete-property/ i2c5;
+		/delete-property/ i2c6;
+		/delete-property/ i2c7;
+		mmc0 = &emmc;
+		mmc1 = &pc_sdio_a;
+		mmc2 = &pc_sdio_b;
+		serial0 = &pc_uart_a;
+		serial1 = &pc_uart_b;
+		serial2 = &pc_uart_c;
+		serial3 = &pc_uart_d;
+		/delete-property/ serial4;
+		/delete-property/ serial5;
+		/delete-property/ serial6;
+		/delete-property/ serial7;
+		spi0 = &pc_spi_a;
+		spi1 = &pc_spi_b;
+		rtc0 = &ext_rtc;
+		rtc1 = &bbnsm_rtc;
+		adc  = &adc1;
+	};
+};
+
+&pc_eth_a {
+	pinctrl-names = "default", "sleep";
+  pinctrl-0 = <&pinmux_eqos>;
+  phy-mode = "rgmii-id";
+  phy-handle = <&ethphy0>;
+  status = "disabled";
+
+  mdio {
+		compatible = "snps,dwmac-mdio";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		clock-frequency = <5000000>;
+
+		ethphy0: ethernet-phy@4 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <4>;
+			rtl821x,clkout-disable;
+			rtl821x,aldps-enable;
+			rtl821x,ssc-rxc-enable;
+			rtl821x,ssc-sysclk-enable;
+			rtl821x,ssc-clkout-enable;
+			reset-gpios = <&expander 0 GPIO_ACTIVE_LOW>;
+			reset-assert-us = <10000>;
+			reset-deassert-us = <50000>;
+			interrupt-parent = <&gpio2>;
+			interrupts = <28 IRQ_TYPE_LEVEL_LOW>;
+			eee-broken-1000t;
+      
+  };
+};
+
+
+/* A55-Core Console on BBDSI J9 Connector */
+&pc_uart_a {
+  current-speed = <115200>;
+  pinctrl-0 = <&uart7_default>;
+  pinctrl-names = <default>;
+  status = "okay";
+};
+
+/* Used for BT. See overlay for device definition*/
+&pc_uart_b {
+  pinctrl-0 = <&uart6_default>, <&uart6_bt>;
+  pinctrl-names = <default>;
+  status = "disabled";
+};
+
+/* M33-Core Console on BBDSI J8 Connector */
+&pc_uart_c {
+	status = "disabled";
+};
+
+/* UART_D on GPIO pin header J11_13 TXD and J11_15 RXD */
+&pc_uart_d {
+  status = "disabled";
+};
+
+&pc_i2c_a {
+	status = "disabled";
+	clock-frequency = <I2C_BITRATE_FAST>;
+	pinctrl-0 = <&i2c1_default>;
+	pinctrl-names = "default";
+};
+
+&pc_i2c_d {
+	status = "disabled";
+	clock-frequency = <I2C_BITRATE_FAST>;
+	pinctrl-0 = <&i2c2_default>;
+	pinctrl-names = "default";
+};
+
+&pc_spi_a {
+	fsl,spi-num-chipselects = <1>;
+	pinctrl-0 = <&spi6_default>;
+	pinctrl-names = "default";
+  cs-gpios = <&gpio2 1 GPIO_ACTIVE_LOW>;
+  status = "disabled";
+
+  spidev@0 {
+    combatible = "linux,spidev";
+    spi-max-frequency = <20000000>;
+    reg = <0>;
+    status = "disabled"
+  };
+};
+
+&flexcan1 {
+	pinctrl-0 = <&flexcan1_default>;
+	pinctrl-names = "default";
+	status = "disabled";
+};
+
+&gpio1{
+	status = "okay";
+};
+
+&gpio2{
+	status = "okay";
+};
+
+&gpio3{
+	status = "okay";
+};
+
+&gpio4{
+	status = "okay";
+};

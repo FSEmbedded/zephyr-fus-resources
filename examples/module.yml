@@ -1,0 +1,3 @@
+name: resources_examples
+build:
+  kconfig: true

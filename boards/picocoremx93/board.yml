@@ -1,0 +1,9 @@
+board:
+  name: picocoremx93
+  full_name: PicoCoreMX93
+  vendor: F+S
+  socs:
+  - name: mimx9352
+    variants:
+    - name: ddr
+      cpucluster: m33

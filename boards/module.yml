@@ -1,0 +1,3 @@
+name: resources_boards
+build:
+  board_root: true

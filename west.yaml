@@ -1,6 +1,6 @@
 manifest:
   projects:
-    - name: zephyr
+    - name: zephyr-fus
       url: https://github.com/FSEmbedded/zephyr-fus
       revision: main
       path: zephyr

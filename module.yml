@@ -1,0 +1,4 @@
+name: zephyr_fus_resources
+build:
+  board_root: boards
+
